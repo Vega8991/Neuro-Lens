@@ -1,0 +1,1517 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>NeuroLens — Think it. See it. Do it.</title>
+
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
+<link href="https://api.fontshare.com/v2/css?f[]=satoshi@300,400,500,700&display=swap" rel="stylesheet" />
+
+<style>
+  /* =========================================================
+     NEXUS DESIGN SYSTEM — tokens
+     ========================================================= */
+  :root {
+    /* Type */
+    --font-display: "Instrument Serif", "Times New Roman", serif;
+    --font-body: "Satoshi", -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-mono: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, monospace;
+
+    /* Spacing scale */
+    --space-1: 4px;
+    --space-2: 8px;
+    --space-3: 12px;
+    --space-4: 16px;
+    --space-5: 24px;
+    --space-6: 32px;
+    --space-7: 48px;
+    --space-8: 64px;
+    --space-9: 96px;
+    --space-10: 128px;
+
+    /* Radii */
+    --radius-sm: 6px;
+    --radius-md: 12px;
+    --radius-lg: 20px;
+    --radius-xl: 28px;
+    --radius-full: 999px;
+
+    /* Motion */
+    --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+    --dur-fast: 180ms;
+    --dur: 320ms;
+    --dur-slow: 600ms;
+
+    /* Layout */
+    --max-w: 1280px;
+    --gutter: clamp(16px, 4vw, 48px);
+  }
+
+  /* Dark theme (default) */
+  :root[data-theme="dark"] {
+    --bg-0: #07090b;
+    --bg-1: #0c1014;
+    --bg-2: #11161b;
+    --bg-3: #1a2127;
+
+    --fg-0: #f3f6f7;
+    --fg-1: #c8d1d4;
+    --fg-2: #8d9aa0;
+    --fg-3: #5d6970;
+
+    --border: rgba(255, 255, 255, 0.08);
+    --border-strong: rgba(255, 255, 255, 0.16);
+
+    --accent: #4f98a3;
+    --accent-soft: #2a5a62;
+    --accent-glow: rgba(79, 152, 163, 0.35);
+    --accent-fg: #07090b;
+
+    --grid-line: rgba(255, 255, 255, 0.04);
+    --scrim: rgba(7, 9, 11, 0.7);
+
+    color-scheme: dark;
+  }
+
+  /* Light theme */
+  :root[data-theme="light"] {
+    --bg-0: #f6f7f7;
+    --bg-1: #ffffff;
+    --bg-2: #eef0f0;
+    --bg-3: #e2e6e6;
+
+    --fg-0: #0a1316;
+    --fg-1: #2d3a3f;
+    --fg-2: #5e6a6e;
+    --fg-3: #8a9499;
+
+    --border: rgba(10, 19, 22, 0.08);
+    --border-strong: rgba(10, 19, 22, 0.18);
+
+    --accent: #01696f;
+    --accent-soft: #b3d6d8;
+    --accent-glow: rgba(1, 105, 111, 0.18);
+    --accent-fg: #ffffff;
+
+    --grid-line: rgba(10, 19, 22, 0.05);
+    --scrim: rgba(246, 247, 247, 0.7);
+
+    color-scheme: light;
+  }
+
+  /* =========================================================
+     RESET / BASE
+     ========================================================= */
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: var(--font-body);
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 1.55;
+    color: var(--fg-1);
+    background: var(--bg-0);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    overflow-x: hidden;
+    transition: background var(--dur) var(--ease), color var(--dur) var(--ease);
+  }
+
+  /* Subtle ambient grid */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background-image:
+      linear-gradient(var(--grid-line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+    background-size: 64px 64px;
+    mask-image: radial-gradient(ellipse at 50% 30%, black 0%, transparent 70%);
+    z-index: 0;
+  }
+
+  /* Ambient accent glow */
+  body::after {
+    content: "";
+    position: fixed;
+    width: 80vw;
+    height: 80vw;
+    max-width: 1100px;
+    max-height: 1100px;
+    top: -30%;
+    left: 50%;
+    transform: translateX(-50%);
+    pointer-events: none;
+    background: radial-gradient(circle at center, var(--accent-glow) 0%, transparent 60%);
+    opacity: 0.7;
+    z-index: 0;
+  }
+
+  /* Type */
+  h1, h2, h3, h4 {
+    font-family: var(--font-display);
+    font-weight: 400;
+    color: var(--fg-0);
+    letter-spacing: -0.01em;
+    margin: 0;
+    text-wrap: balance;
+  }
+  h1 { font-size: clamp(48px, 8vw, 112px); line-height: 0.95; letter-spacing: -0.03em; }
+  h2 { font-size: clamp(36px, 5.5vw, 72px); line-height: 1.0; letter-spacing: -0.02em; }
+  h3 { font-size: clamp(24px, 2.5vw, 32px); line-height: 1.1; }
+  h4 { font-size: clamp(18px, 1.6vw, 22px); line-height: 1.2; }
+
+  p { margin: 0; text-wrap: pretty; }
+
+  a { color: inherit; text-decoration: none; }
+
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    color: var(--accent);
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
+  .eyebrow::before {
+    content: "";
+    width: 6px;
+    height: 6px;
+    background: var(--accent);
+    border-radius: 50%;
+    box-shadow: 0 0 8px var(--accent-glow), 0 0 16px var(--accent-glow);
+  }
+
+  .serif-italic { font-style: italic; color: var(--accent); }
+
+  /* =========================================================
+     LAYOUT PRIMITIVES
+     ========================================================= */
+  .container {
+    width: 100%;
+    max-width: var(--max-w);
+    margin-inline: auto;
+    padding-inline: var(--gutter);
+    position: relative;
+    z-index: 1;
+  }
+
+  section {
+    padding-block: clamp(64px, 12vw, 144px);
+    position: relative;
+    z-index: 1;
+  }
+
+  .section-head {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    margin-bottom: var(--space-8);
+    max-width: 760px;
+  }
+
+  .divider {
+    height: 1px;
+    background: var(--border);
+    border: 0;
+    margin: 0;
+  }
+
+  /* =========================================================
+     HEADER
+     ========================================================= */
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    backdrop-filter: blur(18px) saturate(140%);
+    -webkit-backdrop-filter: blur(18px) saturate(140%);
+    background: color-mix(in oklab, var(--bg-0) 70%, transparent);
+    border-bottom: 1px solid var(--border);
+  }
+  .site-header__inner {
+    max-width: var(--max-w);
+    margin-inline: auto;
+    padding: var(--space-4) var(--gutter);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+  }
+  .logo {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-3);
+    color: var(--fg-0);
+  }
+  .logo svg { display: block; }
+  .logo-wordmark {
+    font-family: var(--font-display);
+    font-size: 22px;
+    letter-spacing: -0.01em;
+  }
+  .logo-wordmark em {
+    font-style: italic;
+    color: var(--accent);
+  }
+  .nav {
+    display: none;
+    gap: var(--space-6);
+  }
+  .nav a {
+    font-size: 14px;
+    color: var(--fg-2);
+    transition: color var(--dur-fast) var(--ease);
+  }
+  .nav a:hover { color: var(--fg-0); }
+  @media (min-width: 768px) {
+    .nav { display: inline-flex; }
+  }
+
+  .header-actions {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-3);
+  }
+
+  .theme-toggle {
+    appearance: none;
+    border: 1px solid var(--border-strong);
+    background: var(--bg-2);
+    color: var(--fg-1);
+    width: 38px;
+    height: 38px;
+    border-radius: var(--radius-full);
+    display: inline-grid;
+    place-items: center;
+    cursor: pointer;
+    transition: all var(--dur-fast) var(--ease);
+  }
+  .theme-toggle:hover {
+    color: var(--fg-0);
+    border-color: var(--accent);
+    box-shadow: 0 0 0 4px var(--accent-glow);
+  }
+  .theme-toggle svg { width: 16px; height: 16px; }
+  :root[data-theme="dark"] .theme-toggle .icon-sun { display: block; }
+  :root[data-theme="dark"] .theme-toggle .icon-moon { display: none; }
+  :root[data-theme="light"] .theme-toggle .icon-sun { display: none; }
+  :root[data-theme="light"] .theme-toggle .icon-moon { display: block; }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: 12px 22px;
+    border-radius: var(--radius-full);
+    font-family: var(--font-body);
+    font-weight: 500;
+    font-size: 14px;
+    letter-spacing: 0.01em;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: all var(--dur-fast) var(--ease);
+    text-decoration: none;
+  }
+  .btn--primary {
+    background: var(--accent);
+    color: var(--accent-fg);
+    box-shadow: 0 0 0 0 var(--accent-glow);
+  }
+  .btn--primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 24px -8px var(--accent-glow), 0 0 0 6px var(--accent-glow);
+  }
+  .btn--ghost {
+    background: transparent;
+    color: var(--fg-1);
+    border-color: var(--border-strong);
+  }
+  .btn--ghost:hover {
+    border-color: var(--fg-1);
+    color: var(--fg-0);
+  }
+  .btn--sm { padding: 8px 14px; font-size: 13px; }
+
+  /* =========================================================
+     HERO
+     ========================================================= */
+  .hero {
+    padding-top: clamp(48px, 8vw, 96px);
+    padding-bottom: clamp(48px, 8vw, 80px);
+    position: relative;
+    overflow: hidden;
+  }
+  .hero__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-8);
+    align-items: center;
+  }
+  @media (min-width: 960px) {
+    .hero__grid {
+      grid-template-columns: 1.05fr 0.95fr;
+      gap: var(--space-9);
+    }
+  }
+  .hero__copy { display: flex; flex-direction: column; gap: var(--space-5); }
+  .hero h1 .glow {
+    background: linear-gradient(180deg, var(--fg-0) 0%, var(--accent) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    font-style: italic;
+  }
+  .hero__lede {
+    font-size: clamp(16px, 1.4vw, 19px);
+    color: var(--fg-2);
+    max-width: 50ch;
+    line-height: 1.6;
+  }
+  .hero__cta { display: flex; flex-wrap: wrap; gap: var(--space-3); margin-top: var(--space-3); }
+
+  .hero__meta {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-4);
+    margin-top: var(--space-6);
+    padding-top: var(--space-6);
+    border-top: 1px solid var(--border);
+  }
+  .hero__meta-item .num {
+    font-family: var(--font-display);
+    font-size: clamp(28px, 3.5vw, 40px);
+    color: var(--fg-0);
+    line-height: 1;
+    display: block;
+  }
+  .hero__meta-item .num em { font-style: italic; color: var(--accent); }
+  .hero__meta-item .lbl {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--fg-3);
+    margin-top: 6px;
+    display: block;
+  }
+
+  /* Hero visual */
+  .hero__visual {
+    aspect-ratio: 1 / 1;
+    position: relative;
+    border-radius: var(--radius-xl);
+    background:
+      radial-gradient(circle at 50% 50%, var(--bg-2) 0%, var(--bg-1) 70%, var(--bg-0) 100%);
+    border: 1px solid var(--border);
+    overflow: hidden;
+    isolation: isolate;
+  }
+  .hero__visual::before {
+    /* concentric rings */
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      repeating-radial-gradient(circle at 50% 52%, transparent 0 39px, var(--grid-line) 39px 40px);
+    mask-image: radial-gradient(circle at 50% 52%, black 30%, transparent 75%);
+    z-index: 0;
+  }
+  .hero__visual svg { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 2; }
+  .hero__visual .corner-tag {
+    position: absolute;
+    top: var(--space-4);
+    left: var(--space-4);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--fg-3);
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    z-index: 3;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
+  .corner-tag .dot {
+    width: 6px; height: 6px;
+    background: var(--accent);
+    border-radius: 50%;
+    box-shadow: 0 0 8px var(--accent-glow);
+    animation: pulseDot 2.2s var(--ease) infinite;
+  }
+  .hero__visual .corner-tag--br {
+    top: auto; left: auto;
+    bottom: var(--space-4); right: var(--space-4);
+  }
+  @keyframes pulseDot {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.45; transform: scale(0.7); }
+  }
+
+  /* Floating spec badges */
+  .spec-badge {
+    position: absolute;
+    z-index: 3;
+    background: color-mix(in oklab, var(--bg-1) 80%, transparent);
+    backdrop-filter: blur(6px);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-md);
+    padding: 10px 14px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--fg-1);
+    line-height: 1.3;
+    box-shadow: 0 8px 24px -12px rgba(0,0,0,0.5);
+  }
+  .spec-badge .label {
+    color: var(--fg-3);
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    display: block;
+    margin-bottom: 2px;
+  }
+  .spec-badge .val { color: var(--accent); }
+  .spec-badge.top { top: 12%; right: 6%; }
+  .spec-badge.left { left: 4%; top: 46%; }
+  .spec-badge.bottom { bottom: 12%; right: 10%; }
+
+  /* =========================================================
+     WHAT IT IS
+     ========================================================= */
+  .what__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-7);
+  }
+  @media (min-width: 900px) {
+    .what__grid { grid-template-columns: 1.2fr 1fr; gap: var(--space-9); align-items: center; }
+  }
+  .what__text { display: flex; flex-direction: column; gap: var(--space-5); }
+  .what__text p { font-size: clamp(18px, 1.6vw, 22px); color: var(--fg-1); line-height: 1.55; }
+  .what__text p strong { color: var(--fg-0); font-weight: 500; }
+  .what__list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: var(--space-4);
+    margin-top: var(--space-4);
+    list-style: none;
+    padding: 0;
+  }
+  .what__list li {
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: var(--space-4);
+    background: color-mix(in oklab, var(--bg-1) 60%, transparent);
+  }
+  .what__list h4 {
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--fg-2);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 6px;
+  }
+  .what__list p { font-size: 14px; color: var(--fg-1); }
+
+  /* Neural pattern visual */
+  .neural-card {
+    aspect-ratio: 4 / 5;
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--border);
+    background: linear-gradient(180deg, var(--bg-1) 0%, var(--bg-0) 100%);
+    position: relative;
+    overflow: hidden;
+    padding: var(--space-5);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .neural-card__label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    color: var(--fg-3);
+    display: flex;
+    justify-content: space-between;
+  }
+  .neural-card__viz {
+    flex: 1;
+    margin: var(--space-4) -8px;
+    position: relative;
+  }
+  .neural-card__viz svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+    overflow: visible;
+  }
+  .neural-card__legend {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-2);
+    font-family: var(--font-mono);
+    font-size: 10px;
+  }
+  .neural-card__legend > div {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .neural-card__legend .k { color: var(--fg-3); text-transform: uppercase; letter-spacing: 0.1em; }
+  .neural-card__legend .v { color: var(--accent); font-size: 13px; }
+
+  /* =========================================================
+     GOAL
+     ========================================================= */
+  .goal {
+    background: var(--bg-1);
+    border-block: 1px solid var(--border);
+  }
+  .goal__inner {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-7);
+  }
+  @media (min-width: 900px) {
+    .goal__inner { grid-template-columns: 0.9fr 1.1fr; gap: var(--space-9); align-items: center; }
+  }
+  .goal__quote {
+    font-family: var(--font-display);
+    font-size: clamp(32px, 4.5vw, 56px);
+    line-height: 1.05;
+    color: var(--fg-0);
+    letter-spacing: -0.02em;
+  }
+  .goal__quote em { color: var(--accent); }
+  .goal__detail { display: flex; flex-direction: column; gap: var(--space-5); color: var(--fg-2); }
+  .goal__detail p { font-size: 17px; line-height: 1.65; }
+  .goal__bullets {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+  .goal__bullets li {
+    display: grid;
+    grid-template-columns: 28px 1fr;
+    gap: var(--space-3);
+    align-items: start;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+    color: var(--fg-1);
+    font-size: 15px;
+  }
+  .goal__bullets li::before {
+    content: "→";
+    font-family: var(--font-mono);
+    color: var(--accent);
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  /* =========================================================
+     TECH SPECS
+     ========================================================= */
+  .specs {
+    position: relative;
+  }
+  .specs__table {
+    border-top: 1px solid var(--border-strong);
+    border-bottom: 1px solid var(--border-strong);
+    margin-top: var(--space-6);
+  }
+  .specs__row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-2);
+    padding: var(--space-5) 0;
+    border-bottom: 1px solid var(--border);
+    align-items: baseline;
+    transition: background var(--dur-fast) var(--ease);
+  }
+  .specs__row:last-child { border-bottom: 0; }
+  .specs__row:hover { background: color-mix(in oklab, var(--accent) 4%, transparent); }
+  @media (min-width: 720px) {
+    .specs__row {
+      grid-template-columns: 56px 1.1fr 2fr;
+      gap: var(--space-5);
+    }
+  }
+  .specs__num {
+    font-family: var(--font-mono);
+    color: var(--fg-3);
+    font-size: 12px;
+    letter-spacing: 0.08em;
+  }
+  .specs__key {
+    font-family: var(--font-display);
+    font-size: clamp(22px, 2.4vw, 30px);
+    color: var(--fg-0);
+    line-height: 1.1;
+  }
+  .specs__val {
+    font-size: 16px;
+    color: var(--fg-1);
+    line-height: 1.55;
+  }
+  .specs__val .mono {
+    font-family: var(--font-mono);
+    color: var(--accent);
+    font-size: 13px;
+    background: color-mix(in oklab, var(--accent) 10%, transparent);
+    padding: 2px 8px;
+    border-radius: var(--radius-sm);
+    margin-right: 6px;
+    display: inline-block;
+  }
+
+  /* =========================================================
+     ADVANTAGES
+     ========================================================= */
+  .adv__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+  }
+  @media (min-width: 720px) { .adv__grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1024px) { .adv__grid { grid-template-columns: repeat(4, 1fr); } }
+
+  .adv-card {
+    position: relative;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: linear-gradient(180deg, var(--bg-1) 0%, var(--bg-0) 100%);
+    padding: var(--space-6);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    min-height: 320px;
+    overflow: hidden;
+    transition: all var(--dur) var(--ease);
+  }
+  .adv-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-3px);
+    box-shadow: 0 24px 48px -24px var(--accent-glow);
+  }
+  .adv-card__icon {
+    width: 56px;
+    height: 56px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-strong);
+    display: grid;
+    place-items: center;
+    color: var(--accent);
+    background: color-mix(in oklab, var(--accent) 8%, transparent);
+  }
+  .adv-card h3 {
+    font-size: clamp(22px, 2vw, 26px);
+    line-height: 1.15;
+  }
+  .adv-card p {
+    font-size: 14px;
+    color: var(--fg-2);
+    line-height: 1.6;
+  }
+  .adv-card__stat {
+    margin-top: auto;
+    padding-top: var(--space-3);
+    border-top: 1px dashed var(--border);
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-2);
+  }
+  .adv-card__stat .big {
+    font-family: var(--font-display);
+    font-size: 36px;
+    color: var(--accent);
+    line-height: 1;
+    font-style: italic;
+  }
+  .adv-card__stat .small {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--fg-3);
+  }
+
+  /* =========================================================
+     WHY IT'S THE BEST
+     ========================================================= */
+  .why {
+    background:
+      radial-gradient(circle at 80% 0%, var(--accent-glow) 0%, transparent 40%),
+      radial-gradient(circle at 0% 100%, var(--accent-glow) 0%, transparent 35%),
+      var(--bg-1);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+  .why__inner {
+    text-align: center;
+    max-width: 920px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-6);
+  }
+  .why h2 { font-size: clamp(40px, 6.5vw, 88px); }
+  .why h2 em { color: var(--accent); }
+  .why__lede {
+    font-size: clamp(17px, 1.7vw, 21px);
+    color: var(--fg-1);
+    max-width: 60ch;
+    line-height: 1.6;
+  }
+  .why__formula {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-3);
+    margin-top: var(--space-4);
+    width: 100%;
+    max-width: 760px;
+  }
+  @media (min-width: 720px) {
+    .why__formula { grid-template-columns: 1fr 32px 1fr 32px 1fr; align-items: stretch; }
+  }
+  .why__token {
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-md);
+    padding: var(--space-5);
+    background: color-mix(in oklab, var(--bg-0) 80%, transparent);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-2);
+    text-align: center;
+  }
+  .why__token .k {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    color: var(--fg-3);
+  }
+  .why__token .v {
+    font-family: var(--font-display);
+    font-size: 24px;
+    color: var(--fg-0);
+  }
+  .why__token.is-accent { border-color: var(--accent); box-shadow: 0 0 0 4px var(--accent-glow); }
+  .why__token.is-accent .v { color: var(--accent); font-style: italic; }
+  .why__op {
+    font-family: var(--font-display);
+    font-size: 32px;
+    color: var(--fg-3);
+    display: grid;
+    place-items: center;
+  }
+
+  /* =========================================================
+     FOOTER
+     ========================================================= */
+  .footer {
+    padding-block: var(--space-8) var(--space-6);
+    border-top: 1px solid var(--border);
+  }
+  .footer__inner {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-6);
+  }
+  @media (min-width: 720px) {
+    .footer__inner { grid-template-columns: 1.5fr 1fr 1fr 1fr; gap: var(--space-7); }
+  }
+  .footer h5 {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--fg-3);
+    margin: 0 0 var(--space-3) 0;
+    font-weight: 500;
+  }
+  .footer ul { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px; }
+  .footer a { font-size: 14px; color: var(--fg-1); transition: color var(--dur-fast) var(--ease); }
+  .footer a:hover { color: var(--accent); }
+  .footer__about p { font-size: 14px; color: var(--fg-2); max-width: 38ch; margin-top: var(--space-3); }
+  .footer__bottom {
+    margin-top: var(--space-7);
+    padding-top: var(--space-5);
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--space-4);
+    flex-wrap: wrap;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--fg-3);
+    letter-spacing: 0.08em;
+  }
+
+  /* =========================================================
+     SCROLL-DRIVEN ANIMATIONS
+     ========================================================= */
+  @media (prefers-reduced-motion: no-preference) {
+    .reveal {
+      animation: reveal-in linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 60%;
+    }
+    .reveal-up {
+      animation: reveal-up linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 70%;
+    }
+    .reveal-stagger > * {
+      animation: reveal-up linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 80%;
+    }
+    .reveal-stagger > *:nth-child(2) { animation-range: entry 5% entry 85%; }
+    .reveal-stagger > *:nth-child(3) { animation-range: entry 10% entry 90%; }
+    .reveal-stagger > *:nth-child(4) { animation-range: entry 15% entry 95%; }
+    .reveal-stagger > *:nth-child(5) { animation-range: entry 20% entry 100%; }
+    .reveal-stagger > *:nth-child(6) { animation-range: entry 25% entry 100%; }
+    .reveal-stagger > *:nth-child(7) { animation-range: entry 30% entry 100%; }
+    .reveal-stagger > *:nth-child(8) { animation-range: entry 35% entry 100%; }
+  }
+  @keyframes reveal-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @keyframes reveal-up {
+    from { opacity: 0; transform: translateY(28px); filter: blur(6px); }
+    to { opacity: 1; transform: translateY(0); filter: blur(0); }
+  }
+
+  /* Fallback (no animation-timeline) — show everything */
+  @supports not (animation-timeline: view()) {
+    .reveal, .reveal-up, .reveal-stagger > * {
+      opacity: 1 !important;
+      transform: none !important;
+      filter: none !important;
+    }
+  }
+
+  /* SVG animations */
+  @keyframes brainwave {
+    0% { stroke-dashoffset: 0; }
+    100% { stroke-dashoffset: -800; }
+  }
+  .wave-path {
+    stroke-dasharray: 2 6;
+    animation: brainwave 12s linear infinite;
+  }
+
+  @keyframes spinSlow {
+    from { transform: rotate(0); }
+    to { transform: rotate(360deg); }
+  }
+  .ring-rotate { transform-origin: center; animation: spinSlow 60s linear infinite; }
+  .ring-rotate--rev { transform-origin: center; animation: spinSlow 90s linear infinite reverse; }
+
+  @keyframes scan {
+    0% { transform: translateY(0); opacity: 0.7; }
+    50% { opacity: 1; }
+    100% { transform: translateY(100%); opacity: 0.7; }
+  }
+  .scan-line {
+    position: absolute;
+    left: 0; right: 0;
+    height: 60%;
+    background: linear-gradient(180deg, transparent 0%, var(--accent-glow) 50%, transparent 100%);
+    pointer-events: none;
+    opacity: 0.5;
+    animation: scan 6s var(--ease) infinite;
+    z-index: 1;
+  }
+
+  /* Selection */
+  ::selection { background: var(--accent); color: var(--accent-fg); }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-track { background: var(--bg-0); }
+  ::-webkit-scrollbar-thumb { background: var(--bg-3); border-radius: 999px; border: 2px solid var(--bg-0); }
+  ::-webkit-scrollbar-thumb:hover { background: var(--accent-soft); }
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     HEADER
+     ============================================================ -->
+<header class="site-header">
+  <div class="site-header__inner">
+    <a href="#top" class="logo" aria-label="NeuroLens home">
+      <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <!-- Twin lenses + neural bridge -->
+        <circle cx="10" cy="16" r="6" stroke="currentColor" stroke-width="1.5"/>
+        <circle cx="22" cy="16" r="6" stroke="currentColor" stroke-width="1.5"/>
+        <path d="M14.5 16h3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        <circle cx="10" cy="16" r="2" fill="var(--accent)"/>
+        <circle cx="22" cy="16" r="2" fill="var(--accent)"/>
+        <path d="M4 13c-1 2-1 4 0 6M28 13c1 2 1 4 0 6" stroke="var(--accent)" stroke-width="1.2" stroke-linecap="round"/>
+      </svg>
+      <span class="logo-wordmark">Neuro<em>Lens</em></span>
+    </a>
+
+    <nav class="nav" aria-label="Primary">
+      <a href="#what">Overview</a>
+      <a href="#specs">Specs</a>
+      <a href="#advantages">Advantages</a>
+      <a href="#why">Why</a>
+    </nav>
+
+    <div class="header-actions">
+      <button class="theme-toggle" type="button" aria-label="Toggle theme" id="themeToggle">
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/>
+        </svg>
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"/>
+        </svg>
+      </button>
+      <a href="#reserve" class="btn btn--primary btn--sm">
+        Reserve
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M2 6h8M7 3l3 3-3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+    </div>
+  </div>
+</header>
+
+<main id="top">
+
+  <!-- ============================================================
+       HERO
+       ============================================================ -->
+  <section class="hero">
+    <div class="container">
+      <div class="hero__grid">
+        <div class="hero__copy reveal-up">
+          <span class="eyebrow">NeuroLens · Gen I · Spring 2026</span>
+          <h1>Think it.<br/><span class="glow">See it.</span> Do it.</h1>
+          <p class="hero__lede">
+            NeuroLens is a pair of smart glasses. It weighs only 38 grams. It reads signals from your brain and shows information in front of your eyes. You do not need a keyboard, a mouse, or a screen. Just think, and it works.
+          </p>
+          <div class="hero__cta">
+            <a href="#what" class="btn btn--primary">
+              Explore the device
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M3 7h8M8 4l3 3-3 3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </a>
+            <a href="#specs" class="btn btn--ghost">Read the specs</a>
+          </div>
+
+          <div class="hero__meta">
+            <div class="hero__meta-item">
+              <span class="num">64<em>ch</em></span>
+              <span class="lbl">Brain sensors</span>
+            </div>
+            <div class="hero__meta-item">
+              <span class="num">120<em>°</em></span>
+              <span class="lbl">View of the screen</span>
+            </div>
+            <div class="hero__meta-item">
+              <span class="num">18<em>h</em></span>
+              <span class="lbl">Continuous battery</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="hero__visual reveal" aria-hidden="true">
+          <span class="corner-tag"><span class="dot"></span>NL-01 · LIVE TELEMETRY</span>
+          <span class="corner-tag corner-tag--br">42.7° · 1.21V · ∼θ</span>
+          <div class="scan-line"></div>
+
+          <!-- Concentric rotating rings + glasses + waves -->
+          <svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+            <defs>
+              <radialGradient id="lensGrad" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stop-color="var(--accent)" stop-opacity="0.35"/>
+                <stop offset="60%" stop-color="var(--accent)" stop-opacity="0.05"/>
+                <stop offset="100%" stop-color="var(--accent)" stop-opacity="0"/>
+              </radialGradient>
+              <linearGradient id="waveGrad" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0%" stop-color="var(--accent)" stop-opacity="0"/>
+                <stop offset="50%" stop-color="var(--accent)" stop-opacity="0.9"/>
+                <stop offset="100%" stop-color="var(--accent)" stop-opacity="0"/>
+              </linearGradient>
+            </defs>
+
+            <!-- Outer ticks ring -->
+            <g class="ring-rotate" opacity="0.5">
+              <circle cx="200" cy="200" r="180" stroke="var(--border-strong)" stroke-width="1" fill="none"/>
+              <g stroke="var(--fg-3)" stroke-width="1">
+                <!-- tick marks -->
+                <line x1="200" y1="20" x2="200" y2="30"/>
+                <line x1="200" y1="380" x2="200" y2="370"/>
+                <line x1="20" y1="200" x2="30" y2="200"/>
+                <line x1="380" y1="200" x2="370" y2="200"/>
+                <line x1="73" y1="73" x2="80" y2="80"/>
+                <line x1="327" y1="73" x2="320" y2="80"/>
+                <line x1="73" y1="327" x2="80" y2="320"/>
+                <line x1="327" y1="327" x2="320" y2="320"/>
+              </g>
+            </g>
+
+            <!-- Inner ring (counter) -->
+            <g class="ring-rotate--rev" opacity="0.6">
+              <circle cx="200" cy="200" r="140" stroke="var(--border-strong)" stroke-width="1" stroke-dasharray="2 4" fill="none"/>
+              <circle cx="200" cy="200" r="110" stroke="var(--accent)" stroke-width="0.8" stroke-dasharray="1 8" fill="none" opacity="0.7"/>
+            </g>
+
+            <!-- Glasses frame -->
+            <g transform="translate(200 210)" stroke="var(--fg-0)" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <!-- left lens -->
+              <ellipse cx="-50" cy="0" rx="44" ry="32" fill="url(#lensGrad)"/>
+              <!-- right lens -->
+              <ellipse cx="50" cy="0" rx="44" ry="32" fill="url(#lensGrad)"/>
+              <!-- bridge -->
+              <path d="M-6 -2 Q0 -10 6 -2"/>
+              <!-- temples (with sensor nodes) -->
+              <path d="M-94 -4 L-120 -8" stroke-width="1.2"/>
+              <path d="M94 -4 L120 -8" stroke-width="1.2"/>
+              <!-- sensor nodes on temples -->
+              <g fill="var(--accent)" stroke="none">
+                <circle cx="-100" cy="-6" r="2"/>
+                <circle cx="-110" cy="-9" r="1.5"/>
+                <circle cx="-118" cy="-12" r="1.5"/>
+                <circle cx="100" cy="-6" r="2"/>
+                <circle cx="110" cy="-9" r="1.5"/>
+                <circle cx="118" cy="-12" r="1.5"/>
+              </g>
+              <!-- micro-OLED indicators -->
+              <circle cx="-50" cy="0" r="3" fill="var(--accent)" stroke="none"/>
+              <circle cx="50" cy="0" r="3" fill="var(--accent)" stroke="none"/>
+              <!-- crosshair on right lens -->
+              <g stroke="var(--accent)" stroke-width="0.8" opacity="0.7">
+                <line x1="44" y1="0" x2="56" y2="0"/>
+                <line x1="50" y1="-6" x2="50" y2="6"/>
+              </g>
+            </g>
+
+            <!-- Brainwave traces -->
+            <g fill="none" stroke="url(#waveGrad)" stroke-width="1.4" stroke-linecap="round">
+              <path class="wave-path" d="M30 90 Q60 70, 90 90 T150 90 T210 90 T270 90 T330 90 T390 90"/>
+              <path class="wave-path" d="M30 320 Q60 305, 90 325 T150 320 T210 330 T270 318 T330 326 T390 320" style="animation-delay:-3s"/>
+            </g>
+
+            <!-- Coordinate label -->
+            <g font-family="var(--font-mono)" font-size="9" fill="var(--fg-3)" letter-spacing="1">
+              <text x="200" y="60" text-anchor="middle">α 8.2Hz</text>
+              <text x="200" y="355" text-anchor="middle">β 18.4Hz</text>
+              <text x="50" y="205" text-anchor="middle" transform="rotate(-90 50 205)">θ</text>
+              <text x="350" y="205" text-anchor="middle" transform="rotate(90 350 205)">γ</text>
+            </g>
+          </svg>
+
+          <div class="spec-badge top">
+            <span class="label">Weight</span>
+            <span class="val">38<small style="color:var(--fg-2)">g</small></span>
+          </div>
+          <div class="spec-badge left">
+            <span class="label">Refresh</span>
+            <span class="val">240<small style="color:var(--fg-2)">Hz</small></span>
+          </div>
+          <div class="spec-badge bottom">
+            <span class="label">Latency</span>
+            <span class="val">7<small style="color:var(--fg-2)">ms</small></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       WHAT IT IS
+       ============================================================ -->
+  <section class="what" id="what">
+    <div class="container">
+      <div class="section-head reveal-up">
+        <span class="eyebrow">01 · What it is</span>
+        <h2>A device that reads<br/><span class="serif-italic">your mind.</span></h2>
+      </div>
+
+      <div class="what__grid">
+        <div class="what__text reveal-up">
+          <p>
+            NeuroLens is a light pair of <strong>smart glasses</strong> with a <strong>brain sensor</strong> built into the sides. It has 64 small sensors that read signals from your brain. These sensors detect what you want to do before your hands move.
+          </p>
+          <p>
+            A special chip inside the glasses turns those brain signals into actions very fast. The glasses respond to your thoughts.
+          </p>
+
+          <ul class="what__list reveal-stagger">
+            <li>
+              <h4>Design</h4>
+              <p>Made of titanium, only 38 g. It looks like normal glasses.</p>
+            </li>
+            <li>
+              <h4>Input</h4>
+              <p>64 brain sensors + motion sensor + eye tracking at 480 Hz.</p>
+            </li>
+            <li>
+              <h4>Output</h4>
+              <p>Two 4K screens, one for each eye. 120° view. Almost invisible.</p>
+            </li>
+            <li>
+              <h4>AI</h4>
+              <p>An AI model runs inside the glasses. Your data never leaves the device.</p>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Neural pattern card -->
+        <div class="neural-card reveal" aria-hidden="true">
+          <div class="neural-card__label">
+            <span>Signal · Channel array</span>
+            <span>NL-01 · 64ch</span>
+          </div>
+
+          <div class="neural-card__viz">
+            <svg viewBox="0 0 320 320" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+              <!-- 8 EEG channel traces -->
+              <g fill="none" stroke="var(--accent)" stroke-width="1.2" stroke-linecap="round" opacity="0.85">
+                <path class="wave-path" d="M0 30 Q20 18 40 32 T80 28 T120 34 T160 26 T200 36 T240 30 T280 32 T320 28"/>
+                <path class="wave-path" d="M0 65 Q20 56 40 70 T80 62 T120 72 T160 60 T200 70 T240 64 T280 70 T320 62" style="animation-delay:-1s"/>
+                <path class="wave-path" d="M0 100 Q20 88 40 108 T80 94 T120 104 T160 92 T200 110 T240 96 T280 104 T320 94" style="animation-delay:-2s"/>
+                <path class="wave-path" d="M0 135 Q20 120 40 144 T80 128 T120 142 T160 122 T200 144 T240 130 T280 140 T320 126" style="animation-delay:-3s"/>
+                <path class="wave-path" d="M0 170 Q20 160 40 178 T80 168 T120 178 T160 162 T200 180 T240 168 T280 176 T320 164" style="animation-delay:-4s"/>
+                <path class="wave-path" d="M0 205 Q20 192 40 214 T80 200 T120 214 T160 196 T200 214 T240 202 T280 210 T320 198" style="animation-delay:-5s"/>
+                <path class="wave-path" d="M0 240 Q20 230 40 250 T80 234 T120 248 T160 232 T200 250 T240 236 T280 246 T320 232" style="animation-delay:-6s"/>
+                <path class="wave-path" d="M0 275 Q20 264 40 286 T80 270 T120 284 T160 266 T200 286 T240 272 T280 282 T320 268" style="animation-delay:-7s"/>
+              </g>
+              <!-- channel labels -->
+              <g font-family="var(--font-mono)" font-size="8" fill="var(--fg-3)" letter-spacing="0.8">
+                <text x="2" y="14">Fp1</text>
+                <text x="2" y="49">Fp2</text>
+                <text x="2" y="84">F7</text>
+                <text x="2" y="119">F3</text>
+                <text x="2" y="154">Cz</text>
+                <text x="2" y="189">P3</text>
+                <text x="2" y="224">O1</text>
+                <text x="2" y="259">T5</text>
+              </g>
+            </svg>
+          </div>
+
+          <div class="neural-card__legend">
+            <div><span class="k">δ</span><span class="v">0.5–4Hz</span></div>
+            <div><span class="k">θ</span><span class="v">4–8Hz</span></div>
+            <div><span class="k">α</span><span class="v">8–13Hz</span></div>
+            <div><span class="k">β</span><span class="v">13–30Hz</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       GOAL
+       ============================================================ -->
+  <section class="goal" id="goal">
+    <div class="container">
+      <div class="goal__inner">
+        <div class="reveal-up">
+          <span class="eyebrow" style="margin-bottom:24px;">02 · Main goal</span>
+          <h2 class="goal__quote" style="margin-top:16px;">
+            No more keyboard,<br/>no mouse,<br/>no <em>touchscreen.</em>
+          </h2>
+        </div>
+
+        <div class="goal__detail reveal-up">
+          <p>
+            Almost all devices need your hands. NeuroLens is different. It reads your brain signals and tracks your eyes. You can use any device — a phone, a computer, or a car — using only your attention.
+          </p>
+          <ul class="goal__bullets">
+            <li>Click, scroll, type, and select using only your thoughts and eyes.</li>
+            <li>Switch between apps in less than 80 ms. That is faster than a finger tap.</li>
+            <li>Works with any operating system using one wireless connection.</li>
+            <li>Comfortable to wear for 16 hours. No gel needed on your skin.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       TECH SPECS
+       ============================================================ -->
+  <section class="specs" id="specs">
+    <div class="container">
+      <div class="section-head reveal-up">
+        <span class="eyebrow">03 · Technical specifications</span>
+        <h2>All the<br/><span class="serif-italic">technical details.</span></h2>
+      </div>
+
+      <div class="specs__table reveal-stagger">
+        <div class="specs__row">
+          <span class="specs__num">01</span>
+          <h3 class="specs__key">Neural sensor array</h3>
+          <p class="specs__val"><span class="mono">64ch</span>64 brain sensors in the glasses arms. No gel needed. They read brain signals 1,000 times per second.</p>
+        </div>
+        <div class="specs__row">
+          <span class="specs__num">02</span>
+          <h3 class="specs__key">AR display</h3>
+          <p class="specs__val"><span class="mono">4K · 120° · 240Hz</span>Two tiny screens, one for each eye. 4K quality, 120° view, very fast refresh at 240 Hz, and very bright.</p>
+        </div>
+        <div class="specs__row">
+          <span class="specs__num">03</span>
+          <h3 class="specs__key">Processor</h3>
+          <p class="specs__val"><span class="mono">12 TOPS</span>A special chip made at 3 nm. It is designed to understand brain signals very quickly.</p>
+        </div>
+        <div class="specs__row">
+          <span class="specs__num">04</span>
+          <h3 class="specs__key">Battery</h3>
+          <p class="specs__val"><span class="mono">18h</span>18 hours of use with all features on. Wireless charging included. From 0 to 80% in only 22 minutes.</p>
+        </div>
+        <div class="specs__row">
+          <span class="specs__num">05</span>
+          <h3 class="specs__key">Connectivity</h3>
+          <p class="specs__val"><span class="mono">Wi-Fi 7 · BT 6.0 · 6G</span>Wi-Fi 7, Bluetooth 6.0, UWB, and ready for 6G networks in the future.</p>
+        </div>
+        <div class="specs__row">
+          <span class="specs__num">06</span>
+          <h3 class="specs__key">AI model</h3>
+          <p class="specs__val"><span class="mono">on-device</span>An AI model runs inside the glasses. It learns your brain patterns in less than 7 minutes.</p>
+        </div>
+        <div class="specs__row">
+          <span class="specs__num">07</span>
+          <h3 class="specs__key">Weight</h3>
+          <p class="specs__val"><span class="mono">38g</span>Titanium frame and carbon-fiber arms. Lighter than most reading glasses.</p>
+        </div>
+        <div class="specs__row">
+          <span class="specs__num">08</span>
+          <h3 class="specs__key">Operating system</h3>
+          <p class="specs__val"><span class="mono">NeuroOS 1.0</span>Based on Linux. Open for developers to build new apps and tools.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       ADVANTAGES
+       ============================================================ -->
+  <section class="adv" id="advantages">
+    <div class="container">
+      <div class="section-head reveal-up">
+        <span class="eyebrow">04 · Advantages</span>
+        <h2>Why people<br/><span class="serif-italic">love NeuroLens.</span></h2>
+      </div>
+
+      <div class="adv__grid reveal-stagger">
+        <article class="adv-card">
+          <div class="adv-card__icon">
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="14" cy="14" r="10"/>
+              <path d="M14 4v10l6 3"/>
+              <circle cx="14" cy="14" r="2" fill="currentColor"/>
+            </svg>
+          </div>
+          <h3>Made for everyone.</h3>
+          <p>NeuroLens is great for people with disabilities. You can control everything with your mind. No physical movement is needed.</p>
+          <div class="adv-card__stat">
+            <span class="big">100<small style="font-size:18px">%</small></span>
+            <span class="small">Hands-free<br/>operation</span>
+          </div>
+        </article>
+
+        <article class="adv-card">
+          <div class="adv-card__icon">
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M14 3l2 6h6l-5 4 2 7-6-4-6 4 2-7-5-4h6z"/>
+            </svg>
+          </div>
+          <h3>10× the speed of typing.</h3>
+          <p>After three weeks, most users can think ten times faster than they can type. Your thoughts are faster than your fingers.</p>
+          <div class="adv-card__stat">
+            <span class="big">10<small style="font-size:18px">×</small></span>
+            <span class="small">Faster than<br/>QWERTY</span>
+          </div>
+        </article>
+
+        <article class="adv-card">
+          <div class="adv-card__icon">
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <ellipse cx="14" cy="14" rx="11" ry="6"/>
+              <circle cx="14" cy="14" r="2.5" fill="currentColor"/>
+            </svg>
+          </div>
+          <h3>No eye tiredness.</h3>
+          <p>The screen changes with the light around you and your eye focus. You will not feel tired or get eye strain.</p>
+          <div class="adv-card__stat">
+            <span class="big">0<small style="font-size:18px">px</small></span>
+            <span class="small">Screen<br/>fatigue</span>
+          </div>
+        </article>
+
+        <article class="adv-card">
+          <div class="adv-card__icon">
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect x="6" y="12" width="16" height="12" rx="2"/>
+              <path d="M9 12V8a5 5 0 0 1 10 0v4"/>
+              <circle cx="14" cy="18" r="1.5" fill="currentColor"/>
+            </svg>
+          </div>
+          <h3>Your data stays private.</h3>
+          <p>Your brain data never leaves the glasses. No data is sent to the internet. The software is checked for safety every time you turn it on.</p>
+          <div class="adv-card__stat">
+            <span class="big">0<small style="font-size:18px">B</small></span>
+            <span class="small">Neural data<br/>uploaded</span>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       WHY IT'S THE BEST
+       ============================================================ -->
+  <section class="why" id="why">
+    <div class="container">
+      <div class="why__inner">
+        <span class="eyebrow reveal-up">05 · Why it's the best device possible</span>
+        <h2 class="reveal-up">The <em>only</em> interface<br/>you will ever need.</h2>
+        <p class="why__lede reveal-up">
+          Thinking is the most natural way to control a computer. Augmented reality is the best way to see digital information. NeuroLens combines both. You can wear it for 16 hours and forget it is there.
+        </p>
+
+        <div class="why__formula reveal-stagger">
+          <div class="why__token">
+            <span class="k">Input</span>
+            <span class="v">Thought</span>
+          </div>
+          <div class="why__op">+</div>
+          <div class="why__token">
+            <span class="k">Output</span>
+            <span class="v">AR</span>
+          </div>
+          <div class="why__op">=</div>
+          <div class="why__token is-accent">
+            <span class="k">Result</span>
+            <span class="v">NeuroLens</span>
+          </div>
+        </div>
+
+        <div class="hero__cta reveal-up" id="reserve" style="margin-top: 16px;">
+          <a href="#" class="btn btn--primary">
+            Reserve your NeuroLens
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M3 7h8M8 4l3 3-3 3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+          <a href="#specs" class="btn btn--ghost">Download the spec sheet</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       FOOTER
+       ============================================================ -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer__inner">
+        <div class="footer__about">
+          <a href="#top" class="logo" aria-label="NeuroLens home">
+            <svg width="28" height="28" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+              <circle cx="10" cy="16" r="6" stroke="currentColor" stroke-width="1.5"/>
+              <circle cx="22" cy="16" r="6" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M14.5 16h3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+              <circle cx="10" cy="16" r="2" fill="var(--accent)"/>
+              <circle cx="22" cy="16" r="2" fill="var(--accent)"/>
+            </svg>
+            <span class="logo-wordmark">Neuro<em>Lens</em></span>
+          </a>
+          <p>A product idea that combines brain sensors with augmented reality glasses. Built on the Nexus Design System.</p>
+        </div>
+
+        <div>
+          <h5>Product</h5>
+          <ul>
+            <li><a href="#what">Overview</a></li>
+            <li><a href="#specs">Specifications</a></li>
+            <li><a href="#advantages">Advantages</a></li>
+            <li><a href="#reserve">Reserve</a></li>
+          </ul>
+        </div>
+        <div>
+          <h5>Developers</h5>
+          <ul>
+            <li><a href="#">NeuroOS SDK</a></li>
+            <li><a href="#">Intent API</a></li>
+            <li><a href="#">Reference docs</a></li>
+            <li><a href="#">GitHub</a></li>
+          </ul>
+        </div>
+        <div>
+          <h5>Company</h5>
+          <ul>
+            <li><a href="#">Research</a></li>
+            <li><a href="#">Privacy charter</a></li>
+            <li><a href="#">Press kit</a></li>
+            <li><a href="#">Contact</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer__bottom">
+        <span>© 2026 NeuroLens Systems · Concept</span>
+        <span>v1.0 · Nexus DS</span>
+      </div>
+    </div>
+  </footer>
+
+</main>
+
+<script>
+  // Theme toggle with localStorage persistence
+  (function () {
+    const root = document.documentElement;
+    const btn = document.getElementById('themeToggle');
+    const stored = localStorage.getItem('nl-theme');
+    if (stored === 'light' || stored === 'dark') {
+      root.setAttribute('data-theme', stored);
+    }
+    btn.addEventListener('click', () => {
+      const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      root.setAttribute('data-theme', next);
+      localStorage.setItem('nl-theme', next);
+    });
+  })();
+
+  // Smooth scroll for in-page links
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', (e) => {
+      const id = a.getAttribute('href');
+      if (id.length > 1) {
+        const target = document.querySelector(id);
+        if (target) {
+          e.preventDefault();
+          const headerH = document.querySelector('.site-header')?.offsetHeight || 0;
+          const top = target.getBoundingClientRect().top + window.scrollY - headerH - 8;
+          window.scrollTo({ top, behavior: 'smooth' });
+        }
+      }
+    });
+  });
+</script>
+
+</body>
+</html>
